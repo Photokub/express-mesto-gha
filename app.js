@@ -10,8 +10,10 @@ const Card = require("./models/cards")
 const users = require('./routes/users')
 
 
-
+app.use(express.json());
 app.use('/users', require('./routes/users'));
+app.use('/users/:userId', require('./routes/users'));
+
 
 
 
