@@ -1,59 +1,18 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const {Schema} = require("mongoose");
-const {PORT = 3000} = process.env
-
 const app = express();
+const mongoose = require('mongoose');
+
+const {PORT = 3000} = process.env
+const {Schema} = require("mongoose");
+const User = require("./models/users");
+const Card = require("./models/cards")
+const router = require('./routers/users')
 
 
-const userSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        minlength: 2,
-        maxlength: 20,
-    },
-    about: {
-        type: String,
-        required: true,
-        minlength: 2,
-        maxlength: 20,
-    },
-    avatar: {
-        type: String,
-        required: true,
-    }
-})
 
-const user = mongoose.model('user', userSchema);
-module.exports = user;
+app.use('/', router);
 
-const cardSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required: true,
-        minlength: 2,
-        maxlength: 20,
-    },
-    link: {
-        type: String,
-        required: true,
-    },
-    owner: {
-        user,
-        type: mongoose.ObjectId,
-        required: true,
-    },
-    likes: {
-        type: mongoose.ObjectId,
-        default: [],
-    },
-    createdAt:{
-        type: { type: Date, default: Date.now },
-    }
-})
 
-module.exports = mongoose.model('card', cardSchema)
 
 mongoose.connect('mongodb://localhost:27017/mestodb', () => {
     console.log('Подключение базы mestodb');
