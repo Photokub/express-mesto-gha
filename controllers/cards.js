@@ -22,22 +22,30 @@ const deleteCard = (req, res) => {
 }
 
 const putLike = (req, res) => {
-  Card.findByIdAndUpdate(req.params._id,
+  Card.findByIdAndUpdate(
+    req.params._id,
     {$addToSet: {likes: req.user._id}},
     {new: true},
-    card => res.send(card)
   )
-  //.then(card => res.send(card))
-  // .then(
-  //   {$addToSet: {likes: req.user._id}},
-  //   {new: true})
-  // .catch(err => console.log(`Произошла ошибка: ${err}. Текст ошибки: ${err.message}`))
+    .then(card => res.send(card))
+    .catch(err => console.log(`Произошла ошибка: ${err}. Текст ошибки: ${err.message}`))
+}
+
+const deleteLike = (req, res) => {
+  Card.findByIdAndUpdate(
+    req.params._id,
+    {$pull: {likes: req.user._id}},
+    {new: true},
+  )
+    .then(card => res.send(card))
+    .catch(err => console.log(`Произошла ошибка: ${err}. Текст ошибки: ${err.message}`))
 }
 
 module.exports = {
   createCard,
   getCards,
   deleteCard,
-  putLike
+  putLike,
+  deleteLike
 }
 
