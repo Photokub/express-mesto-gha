@@ -19,7 +19,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb', () => {
 });
 
 app.use(express.json());
-app.use('/users', require('./routes/users'));
+
 //app.use('/users/:userId', require('./routes/users'));
 
 app.use((req, res, next) => {
@@ -28,7 +28,7 @@ app.use((req, res, next) => {
   };
   next();
 });
-
+app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 //app.use('/cards/:cardId', require('./routes/cards'));
 

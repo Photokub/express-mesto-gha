@@ -14,23 +14,39 @@ const getUser = (req, res) => {
 }
 
 const getUserId = (req, res) => {
+  const {name, about} = req.body;
   User.findById(req.params._id)
+    .then(user => {
+      user.name = name;
+      user.about = about;
+      console.log(user);
+      return user;
+    })
     .then(user => res.send(user))
     .catch(err => console.log(`Произошла ошибка: ${err}. Текст ошибки: ${err.message}`))
 }
 
-// const createUser = async (req, res) => {
-//   const {name, about, avatar} = req.body;
-//   try {
-//     const user = await User.create({name, about, avatar})
-//     return res.json(user)
-//   } catch {err => console.log(`Произошла ошибка: ${err}. Текст ошибки: ${err.message}`)}
-// }
-//
+const patchUserText = (req, res) => {
+  const {name, about} = req.body;
+  User.findByIdAndUpdate(req.params._id, { name: name,  about: about })
+    .then(user => res.send(user))
+    .catch(err => console.log(`Произошла ошибка: ${err}. Текст ошибки: ${err.message}`))
+}
+
+const patchUserAvatar = (req, res) => {
+  const {avatar} = req.body;
+  User.findByIdAndUpdate(req.params._id, {avatar: avatar})
+    .then(user => res.send(user))
+    .catch(err => console.log(`Произошла ошибка: ${err}. Текст ошибки: ${err.message}`))
+}
+
+
 module.exports = {
   createUser,
   getUser,
-  getUserId
+  getUserId,
+  patchUserText,
+  patchUserAvatar
 }
 
 
