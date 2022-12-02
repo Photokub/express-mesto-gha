@@ -64,7 +64,7 @@ const patchUserAvatar = (req, res) => {
       if (!user) {
         return res.status(404).send({message: "Пользователь не найден"})
       }
-      res.status(200).send(avatar)
+      res.status(200).send({avatar:avatar})
     })
     .catch(err => {
       console.error(err)
