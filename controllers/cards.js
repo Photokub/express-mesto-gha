@@ -1,24 +1,40 @@
 const Card = require("../models/cards");
+const ERROR_CODE = 400;
 
-const createCard = (req, res) => {
-  console.log(req.user._id);
-  const {name, link} = req.body
-  //const _id = req.user._id
-  Card.create({name, link, owner: req.user._id})
-    .then(cards => res.send(cards))
-    .catch(err => console.log(`Произошла ошибка: ${err}. Текст ошибки: ${err.message}`))
+
+const createCard = async (req, res) => {
+  try {
+    console.log(req.user._id);
+    const {name, link} = req.body
+    const card = await Card.create({name, link, owner: req.user._id})
+    return res.status(201).send(card)
+  } catch (err) {
+    if (err.name === "ValidationError" || err.name === "CastError") {
+      return res.status(ERROR_CODE).send({message: err.message})
+    }
+    console.error(err)
+    return res.status(500).send({message: "Произошла ошибка"})
+  }
 };
 
-const getCards = (req, res) => {
-  Card.find({})
-    .then(cards => res.send(cards))
-    .catch(err => console.log(`Произошла ошибка: ${err}. Текст ошибки: ${err.message}`))
+const getCards = async (req, res) => {
+  try {
+    const cards = await Card.find({})
+    return res.status(200).send(cards)
+  } catch (err) {
+    console.error(err)
+    return res.status(500).send({message: "Произошла ошибка"})
+  }
 };
 
-const deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params._id)
-    .then(cards => res.send({data: cards}))
-    .catch(err => console.log(`Произошла ошибка: ${err}. Текст ошибки: ${err.message}`))
+const deleteCard = async (req, res) => {
+  try {
+    await Card.findByIdAndRemove(req.params._id)
+    return res.status(204).send({message: "Карточка успешно удалена"})
+  } catch (err) {
+    console.error(err)
+    return res.status(500).send({message: "Произошла ошибка"})
+  }
 }
 
 const putLike = (req, res) => {
@@ -28,7 +44,10 @@ const putLike = (req, res) => {
     {new: true},
   )
     .then(card => res.send(card))
-    .catch(err => console.log(`Произошла ошибка: ${err}. Текст ошибки: ${err.message}`))
+    .catch(err => {
+      console.error(err)
+      return res.status(500).send({message: "Произошла ошибка"})
+    })
 }
 
 const deleteLike = (req, res) => {
@@ -38,7 +57,10 @@ const deleteLike = (req, res) => {
     {new: true},
   )
     .then(card => res.send(card))
-    .catch(err => console.log(`Произошла ошибка: ${err}. Текст ошибки: ${err.message}`))
+    .catch(err => {
+      console.error(err)
+      return res.status(500).send({message: "Произошла ошибка"})
+    })
 }
 
 module.exports = {

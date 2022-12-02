@@ -3,47 +3,80 @@ const User = require("../models/users");
 const createUser = (req, res) => {
   const {name, about, avatar} = req.body;
   User.create({name, about, avatar})
-    .then(user => res.send(user))
-    .catch(err => console.log(`Произошла ошибка: ${err}. Текст ошибки: ${err.message}`))
+    .then(user => res.status(200).send(user))
+    .catch(err => {
+      if (err.name === "ValidationError" || err.name === "CastError") {
+        return res.status(400).send({message: err.message})
+      }
+      console.error(err)
+      return res.status(500).send({message: "Произошла ошибка"}
+      )
+    })
 }
 
-const getUser = (req, res) => {
+const getUsers = (req, res) => {
   User.find({})
-    .then(users => res.send(users))
-    .catch(err => console.log(`Произошла ошибка: ${err}. Текст ошибки: ${err.message}`))
+    .then(users => res.status(200).send(users))
+    .catch((err) => {
+      console.error(err)
+      return res.status(500).send({message: "Произошла ошибка"})
+    })
 }
 
 const getUserId = (req, res) => {
-  const {name, about} = req.body;
   User.findById(req.params._id)
     .then(user => {
-      user.name = name;
-      user.about = about;
+      if (!user) {
+        return res.status(404).send({message: "Пользователь не найден"})
+      }
       console.log(user);
-      return user;
+      return res.status(200).send(user);
     })
     .then(user => res.send(user))
-    .catch(err => console.log(`Произошла ошибка: ${err}. Текст ошибки: ${err.message}`))
+    .catch(err => {
+      console.error(err)
+      return res.status(500).send({message: "Произошла ошибка"}
+      )
+    })
 }
 
 const patchUserText = (req, res) => {
   const {name, about} = req.body;
-  User.findByIdAndUpdate(req.params._id, { name: name,  about: about })
-    .then(user => res.send(user))
-    .catch(err => console.log(`Произошла ошибка: ${err}. Текст ошибки: ${err.message}`))
+  User.findByIdAndUpdate(req.params._id, {name: name, about: about})
+    .then(user => {
+        if (!user) {
+          return res.status(404).send({message: "Пользователь не найден"})
+        }
+        res.status(200).send(user)
+      }
+    )
+    .catch(err => {
+      console.error(err)
+      return res.status(500).send({message: "Произошла ошибка"}
+      )
+    })
 }
 
 const patchUserAvatar = (req, res) => {
   const {avatar} = req.body;
   User.findByIdAndUpdate(req.params._id, {avatar: avatar})
-    .then(user => res.send(user))
-    .catch(err => console.log(`Произошла ошибка: ${err}. Текст ошибки: ${err.message}`))
+    .then(user => {
+      if (!user) {
+        return res.status(404).send({message: "Пользователь не найден"})
+      }
+      res.status(200).send(user)
+    })
+    .catch(err => {
+      console.error(err)
+      return res.status(500).send({message: "Произошла ошибка"}
+      )
+    })
 }
 
 
 module.exports = {
   createUser,
-  getUser,
+  getUsers,
   getUserId,
   patchUserText,
   patchUserAvatar
