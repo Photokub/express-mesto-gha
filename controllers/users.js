@@ -43,7 +43,7 @@ const getUserId = (req, res) => {
 const patchUserText = (req, res) => {
   const {name, about} = req.body;
   User.findByIdAndUpdate(
-    req.user._id,
+    req.user,
     {name: name, about: about},
     {
       new: true,
