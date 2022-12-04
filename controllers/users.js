@@ -51,7 +51,9 @@ const patchUserText = (req, res) => {
         if (!user) {
           return res.status(404).send({message: "Пользователь не найден"})
         }
+      if(res === req){
         res.status(200).send(user)
+      }
       }
     )
     .catch(err => {
@@ -72,7 +74,9 @@ const patchUserAvatar = (req, res) => {
       if (!user) {
         return res.status(404).send({message: "Пользователь не найден"})
       }
-      res.status(200).send(user)
+      if(res === req){
+        res.status(200).send(user)
+      }
     })
     .catch(err => {
       console.error(err)
