@@ -79,7 +79,7 @@ const patchUserText = async (req, res) => {
       {
         new: true,
         runValidators: true,
-        upsert: true
+
       }
     )
     if (!body.name) {
@@ -87,7 +87,7 @@ const patchUserText = async (req, res) => {
     } else if (!body.about) {
       return res.status(400).send({message: "Поле about должно быть заполнено"})
     }
-    return res.status(200).send(updatedUser(req, res))
+    return res.status(200).send(updatedUser)
   } catch (err) {
     console.error(err)
     return res.status(400).send({message: "Произошла ошибка"})
