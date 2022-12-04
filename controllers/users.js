@@ -42,6 +42,7 @@ const getUserId = (req, res) => {
 
 const patchUserText = (req, res) => {
   const {name, about} = req.body;
+
   User.findByIdAndUpdate(
     req.user._id,
     {name: name, about: about},
@@ -50,8 +51,9 @@ const patchUserText = (req, res) => {
       runValidators: true
     }
   )
+
     .then(user => {
-        if (!user.name && !user.about) {
+        if (!req) {
           return res.status(404).send({message: "Пользователь не найден"})
         }
         res.status(200).send(user)
