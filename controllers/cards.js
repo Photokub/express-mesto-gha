@@ -29,11 +29,14 @@ const getCards = async (req, res) => {
 
 const deleteCard = async (req, res) => {
   try {
-    await Card.findByIdAndRemove(req.params._id)
-    return res.status(204).send({message: "Карточка успешно удалена"})
+    const card = await Card.findByIdAndRemove(req.params._id)
+    if (!card) {
+      res.status(404).send({message: "Карточка не обнаружена"})
+    }
+    return res.status(200).send(card)
   } catch (err) {
     console.error(err)
-    return res.status(500).send({message: "Произошла ошибка"})
+    return res.status(400).send({message: "Произошла ошибка"})
   }
 }
 
