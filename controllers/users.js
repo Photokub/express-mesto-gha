@@ -82,13 +82,13 @@ const patchUserText = async (req, res) => {
         upsert: true
       }
     )
-    if (!body.name || !body.about) {
+    if (!body) {
       return res.status(400).send({message: "Пользователь не найден"})
     }
     return res.status(200).send(updatedUser)
   } catch (err) {
     console.error(err)
-    return res.status(500).send({message: "Произошла ошибка"})
+    return res.status(400).send({message: "Произошла ошибка"})
   }
 }
 
