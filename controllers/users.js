@@ -40,25 +40,44 @@ const getUserId = (req, res) => {
     })
 }
 
-const patchUserText = (req, res) => {
-  const {name, about} = req.body;
-  User.findByIdAndUpdate(
-    req.user,
-    {name: name, about: about},
-    {new: true}
-  )
-    .then(user => {
-        if (!user) {
-          return res.status(400).send({message: "Пользователь не найден"})
-        }
-        res.status(200).send(user)
-      }
+// const patchUserText = (req, res) => {
+//   const {name, about} = req.body;
+//   User.findByIdAndUpdate(
+//     req.user,
+//     {name: name, about: about},
+//     {new: true}
+//   )
+//     .then(user => {
+//         if (!user) {
+//           return res.status(404).send({message: "Пользователь не найден"})
+//         }
+//         res.status(200).send(user)
+//       }
+//     )
+//     .catch(err => {
+//       console.error(err)
+//       return res.status(400).send({message: "Произошла ошибка"}
+//       )
+//     })
+// }
+
+const patchUserText = async (req, res) => {
+  try {
+    const {name, about} = req.body;
+    const user = await User.findByIdAndUpdate(
+      req.user,
+      {name: name, about: about},
+      {new: true}
     )
-    .catch(err => {
-      console.error(err)
-      return res.status(400).send({message: "Произошла ошибка"}
-      )
-    })
+    if (!user) {
+      return res.status(404).send({message: "Пользователь не найден"})
+    }
+    res.status(200).send(user)
+  } catch (err) {
+    console.error(err)
+    return res.status(400).send({message: "Произошла ошибка"}
+    )
+  }
 }
 
 const patchUserAvatar = (req, res) => {
@@ -70,7 +89,7 @@ const patchUserAvatar = (req, res) => {
   )
     .then(user => {
       if (!user) {
-        return res.status(400).send({message: "Пользователь не найден"})
+        return res.status(404).send({message: "Пользователь не найден"})
       }
       res.status(200).send(user)
     })
