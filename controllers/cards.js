@@ -43,10 +43,15 @@ const putLike = (req, res) => {
     {$addToSet: {likes: req.user._id}},
     {new: true},
   )
-    .then(card => res.send(card))
+    .then(card => {
+      if (!card) {
+        res.status(404).send({message: "Карточка не обнаружена"})
+      }
+      res.status(200).send(card)
+    })
     .catch(err => {
       console.error(err)
-      return res.status(500).send({message: "Произошла ошибка"})
+      return res.status(400).send({message: "Произошла ошибка"})
     })
 }
 
@@ -56,10 +61,15 @@ const deleteLike = (req, res) => {
     {$pull: {likes: req.user._id}},
     {new: true},
   )
-    .then(card => res.send(card))
+    .then(card => {
+      if (!card) {
+        res.status(404).send({message: "Карточка не обнаружена"})
+      }
+      res.status(200).send(card)
+    })
     .catch(err => {
       console.error(err)
-      return res.status(500).send({message: "Произошла ошибка"})
+      return res.status(400).send({message: "Произошла ошибка"})
     })
 }
 

@@ -42,10 +42,10 @@ const getUserId = (req, res) => {
 
 const patchUserText = (req, res) => {
   const {name, about} = req.body;
-  User.findByIdAndUpdate(req.params._id, {name: name, about: about})
+  User.findByIdAndUpdate(req.params._id, {name: name, about: about}, {new: true})
     .then(user => {
         if (!user) {
-          return res.status(404).send({message: "Пользователь не найден"})
+          return res.status(400).send({message: "Пользователь не найден"})
         }
         res.status(200).send(user)
       }
@@ -59,12 +59,12 @@ const patchUserText = (req, res) => {
 
 const patchUserAvatar = (req, res) => {
   const {avatar} = req.body;
-  User.findByIdAndUpdate(req.params._id, {avatar: avatar})
+  User.findByIdAndUpdate(req.params._id, {avatar: avatar}, {new: true})
     .then(user => {
       if (!user) {
-        return res.status(404).send({message: "Пользователь не найден"})
+        return res.status(400).send({message: "Пользователь не найден"})
       }
-      res.status(200).send({avatar:avatar})
+      res.status(200).send(user)
     })
     .catch(err => {
       console.error(err)
