@@ -71,7 +71,7 @@ const patchUserText = async (req, res) => {
   try {
     const {body} = req.body;
     const updatedUser = await User.findByIdAndUpdate(
-      req.user._id,
+      req.params._id,
       {
         name: body.name,
         about: body.about
