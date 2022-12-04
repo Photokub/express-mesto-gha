@@ -82,8 +82,10 @@ const patchUserText = async (req, res) => {
         upsert: true
       }
     )
-    if (!body) {
-      return res.status(400).send({message: "Пользователь не найден"})
+    if (!body.name) {
+      return res.status(400).send({message: "Поле name должно быть заполнено"})
+    } else if (!body.about) {
+      return res.status(400).send({message: "Поле about должно быть заполнено"})
     }
     return res.status(200).send(updatedUser)
   } catch (err) {
