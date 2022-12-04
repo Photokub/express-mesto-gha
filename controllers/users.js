@@ -69,7 +69,7 @@ const getUserId = (req, res) => {
 
 const patchUserText = async (req, res) => {
   try {
-    const {body} = req;
+    const {body} = req.body;
     const updatedUser = await User.findByIdAndUpdate(
       req.user._id,
       {
@@ -79,7 +79,7 @@ const patchUserText = async (req, res) => {
       {
         new: true,
         runValidators: true,
-
+        upsert: true
       }
     )
     if (!body.name) {
