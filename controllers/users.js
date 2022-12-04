@@ -70,9 +70,12 @@ const getUserId = (req, res) => {
 const patchUserText = async (req, res) => {
   try {
     const {body} = req;
-    const updatedUser = User.findByIdAndUpdate(
+    const updatedUser = await User.findByIdAndUpdate(
       req.user._id,
-      {body},
+      {
+        name: body.name,
+        about: body.about
+      },
       {
         new: true,
         runValidators: true,
@@ -82,7 +85,7 @@ const patchUserText = async (req, res) => {
     if (!body.name || !body.about) {
       return res.status(400).send({message: "Пользователь не найден"})
     }
-    res.status(200).send(updatedUser)
+    return res.status(200).send(updatedUser)
   } catch (err) {
     console.error(err)
     return res.status(500).send({message: "Произошла ошибка"})
