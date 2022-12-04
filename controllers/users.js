@@ -43,7 +43,6 @@ const getUserId = (req, res) => {
 const patchUserText = (req, res) => {
   const {name, about} = req.body;
   User.findByIdAndUpdate(
-    //req.params._id,
     req.user,
     {name: name, about: about},
     {new: true}
@@ -65,7 +64,6 @@ const patchUserText = (req, res) => {
 const patchUserAvatar = (req, res) => {
   const {avatar} = req.body;
   User.findByIdAndUpdate(
-    //req.params._id,
     req.user,
     {avatar: avatar},
     {new: true}
