@@ -51,7 +51,7 @@ const patchUserText = (req, res) => {
     }
   )
     .then(user => {
-        if (!user.name || !user.about) {
+        if (!user.name && !user.about) {
           return res.status(404).send({message: "Пользователь не найден"})
         }
         res.status(200).send(user)
