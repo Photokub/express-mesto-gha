@@ -40,60 +40,6 @@ const getUserId = (req, res) => {
     })
 }
 
-// const patchUserText = (req, res) => {
-//   const {name, about} = req;
-
-//   User.findByIdAndUpdate(
-//     req.user._id,
-//     {name: name, about: about},
-//     {
-//       new: true,
-//       runValidators: true,
-//       upsert: true
-//     }
-//   )
-//
-//     .then(user => {
-//         if (!name && !about) {
-//           return res.status(400).send({message: "Пользователь не найден"})
-//         }
-//         res.status(200).send(user)
-//       }
-//     )
-//     .catch(err => {
-//       console.error(err)
-//       return res.status(400).send({message: "Произошла ошибка"}
-//       )
-//     })
-// }
-
-// const patchUserText = async (req, res) => {
-//   try {
-//     const {body} = req.body;
-//     const updatedUser = await User.findByIdAndUpdate(
-//       req.user._id,
-//       {
-//         name: body.name,
-//         about: body.about
-//       },
-//       {
-//         new: true,
-//         runValidators: true,
-//         upsert: true
-//       }
-//     )
-//     if (!body.name) {
-//       return res.status(400).send({message: "Поле name должно быть заполнено"})
-//     } else if (!body.about) {
-//       return res.status(400).send({message: "Поле about должно быть заполнено"})
-//     }
-//     return res.status(200).send(updatedUser)
-//   } catch (err) {
-//     console.error(err)
-//     return res.status(400).send({message: "Произошла ошибка"})
-//   }
-// }
-
 const updateUserData = (req, res) => {
   const { user: { _id} , body } = req;
   User.findByIdAndUpdate(_id, body, { new: true, runValidators: true })
@@ -115,7 +61,6 @@ const updateUserData = (req, res) => {
       }
     });
 };
-
 
 const patchUserAvatar = (req, res) => {
   const {avatar} = req.body;
