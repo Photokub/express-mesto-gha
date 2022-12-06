@@ -67,32 +67,56 @@ const getUserId = (req, res) => {
 //     })
 // }
 
-const patchUserText = async (req, res) => {
-  try {
-    const {body} = req.body;
-    const updatedUser = await User.findByIdAndUpdate(
-      req.params._id,
-      {
-        name: body.name,
-        about: body.about
-      },
-      {
-        new: true,
-        runValidators: true,
-        upsert: true
+// const patchUserText = async (req, res) => {
+//   try {
+//     const {body} = req.body;
+//     const updatedUser = await User.findByIdAndUpdate(
+//       req.user._id,
+//       {
+//         name: body.name,
+//         about: body.about
+//       },
+//       {
+//         new: true,
+//         runValidators: true,
+//         upsert: true
+//       }
+//     )
+//     if (!body.name) {
+//       return res.status(400).send({message: "Поле name должно быть заполнено"})
+//     } else if (!body.about) {
+//       return res.status(400).send({message: "Поле about должно быть заполнено"})
+//     }
+//     return res.status(200).send(updatedUser)
+//   } catch (err) {
+//     console.error(err)
+//     return res.status(400).send({message: "Произошла ошибка"})
+//   }
+// }
+
+const updateUserData = (req, res) => {
+  const { user: { _id} , body } = req;
+  //const {body} = req.body;
+  //const {name, about} = req.body;
+  User.findByIdAndUpdate(_id, body, { new: true, runValidators: true })
+    .orFail(() => {
+      const error = new Error('Пользователь по заданному id отсутствует в базе');
+      error.statusCode = 404;
+      throw error;
+    })
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: `${Object.values(err.errors).map((error) => error.message).join(', ')}` });
+      } else if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Передан невалидный id пользователя' });
+      } else if (err.statusCode === 404) {
+        res.status(404).send({ message: err.message });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
       }
-    )
-    if (!body.name) {
-      return res.status(400).send({message: "Поле name должно быть заполнено"})
-    } else if (!body.about) {
-      return res.status(400).send({message: "Поле about должно быть заполнено"})
-    }
-    return res.status(200).send(updatedUser)
-  } catch (err) {
-    console.error(err)
-    return res.status(400).send({message: "Произошла ошибка"})
-  }
-}
+    });
+};
 
 
 const patchUserAvatar = (req, res) => {
@@ -123,8 +147,9 @@ module.exports = {
   createUser,
   getUsers,
   getUserId,
-  patchUserText,
-  patchUserAvatar
+  //patchUserText,
+  patchUserAvatar,
+  updateUserData
 }
 
 
