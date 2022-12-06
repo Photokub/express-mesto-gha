@@ -97,7 +97,7 @@ const getUserId = (req, res) => {
 const updateUserData = (req, res) => {
   //const { user: { _id} , body } = req;
   const {  body } = req;
-  User.findByIdAndUpdate(req.params._id, body, { new: true, runValidators: true })
+  User.findByIdAndUpdate(req.user._id, body, { new: true, runValidators: true })
     .orFail(() => {
       const error = new Error('Пользователь по заданному id отсутствует в базе');
       error.statusCode = 404;
