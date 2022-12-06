@@ -1,5 +1,7 @@
 const Card = require("../models/cards");
 const ERROR_CODE = 400;
+const NOT_FOUND = 404;
+const DEFAULT_ERROR = 500;
 
 
 const createCard = async (req, res) => {
@@ -10,20 +12,20 @@ const createCard = async (req, res) => {
     return res.status(201).send(card)
   } catch (err) {
     if (err.name === "ValidationError" || err.name === "CastError") {
-      return res.status(ERROR_CODE).send({message: err.message})
+      return res.status(ERROR_CODE).send({message: 'Ошибка валидации'})
     }
     console.error(err)
-    return res.status(500).send({message: "Произошла ошибка"})
+    return res.status(DEFAULT_ERROR).send({message: "Произошла ошибка"})
   }
 };
 
 const getCards = async (req, res) => {
   try {
     const cards = await Card.find({})
-    return res.status(200).send(cards)
+    return res.send(cards)
   } catch (err) {
     console.error(err)
-    return res.status(500).send({message: "Произошла ошибка"})
+    return res.status(DEFAULT_ERROR).send({message: "Произошла ошибка"})
   }
 };
 
@@ -31,12 +33,15 @@ const deleteCard = async (req, res) => {
   try {
     const card = await Card.findByIdAndRemove(req.params._id)
     if (!card) {
-      res.status(404).send({message: "Карточка не обнаружена"})
+      res.status(NOT_FOUND).send({message: "Карточка не обнаружена"})
     }
-    return res.status(200).send(card)
+    return res.send(card)
   } catch (err) {
-    console.error(err)
-    return res.status(400).send({message: "Произошла ошибка"})
+    if (err.name === 'CastError' || err.name === 'ValidationError') {
+      res.status(ERROR_CODE).send({message: 'Переданы некорректные данные при создании карточки'});
+    } else {
+      res.status(DEFAULT_ERROR).send({message: 'Произошла ошибка'});
+    }
   }
 }
 
@@ -48,13 +53,16 @@ const putLike = (req, res) => {
   )
     .then(card => {
       if (!card) {
-        res.status(404).send({message: "Карточка не обнаружена"})
+        res.status(NOT_FOUND).send({message: "Карточка не обнаружена"})
       }
-      res.status(200).send(card)
+      res.send(card)
     })
     .catch(err => {
-      console.error(err)
-      return res.status(400).send({message: "Произошла ошибка"})
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        res.status(ERROR_CODE).send({message: 'Переданы некорректные данные для постановки/снятии лайка.'});
+      } else {
+        res.status(DEFAULT_ERROR).send({message: 'Произошла ошибка'});
+      }
     })
 }
 
@@ -66,13 +74,16 @@ const deleteLike = (req, res) => {
   )
     .then(card => {
       if (!card) {
-        res.status(404).send({message: "Карточка не обнаружена"})
+        res.status(NOT_FOUND).send({message: "Карточка не обнаружена"})
       }
-      res.status(200).send(card)
+      res.send(card)
     })
     .catch(err => {
-      console.error(err)
-      return res.status(400).send({message: "Произошла ошибка"})
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        res.status(ERROR_CODE).send({message: 'Переданы некорректные данные для постановки/снятии лайка.'});
+      } else {
+        res.status(DEFAULT_ERROR).send({message: 'Произошла ошибка'});
+      }
     })
 }
 

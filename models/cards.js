@@ -7,7 +7,7 @@ const cardSchema = new Schema({
     type: String,
     required: true,
     minlength: 2,
-    maxlength: 20,
+    maxlength: 30,
   },
   link: {
     type: String,
