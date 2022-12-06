@@ -95,16 +95,15 @@ const getUserId = (req, res) => {
 // }
 
 const updateUserData = (req, res) => {
-  const { user: { _id} , body } = req;
-  //const {body} = req.body;
-  //const {name, about} = req.body;
-  User.findByIdAndUpdate(_id, body, { new: true, runValidators: true })
+  //const { user: { _id} , body } = req;
+  const {  body } = req;
+  User.findByIdAndUpdate(req.params._id, body, { new: true, runValidators: true })
     .orFail(() => {
       const error = new Error('Пользователь по заданному id отсутствует в базе');
       error.statusCode = 404;
       throw error;
     })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.status(200).send( user ))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: `${Object.values(err.errors).map((error) => error.message).join(', ')}` });
