@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
-const {Schema} = require("mongoose");
-const user = require('./users');
+const { Schema } = require('mongoose');
 
 const cardSchema = new Schema({
   name: {
@@ -24,9 +23,10 @@ const cardSchema = new Schema({
     required: false,
   },
   createdAt: {
-    type: Date, default: Date.now,
+    type: Date,
+    default: Date.now,
     required: false,
-  }
-})
+  },
+});
 
-module.exports = mongoose.model('card', cardSchema)
+module.exports = mongoose.model('card', cardSchema);
