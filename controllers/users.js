@@ -36,7 +36,7 @@ const getUserId = (req, res) => {
       return res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные пользователя' });
       } else {
         res.status(DEFAULT_ERROR).send({ message: 'Произошла ошибка' });
@@ -58,10 +58,10 @@ const updateUserData = (req, res) => {
     })
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
         res.status(ERROR_CODE).send({ message: 'Передан невалидный id пользователя' });
       } else if (err.statusCode === NOT_FOUND) {
-        res.status(NOT_FOUND).send({ message: 'Ошибка валидации' });
+        res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
       } else {
         res.status(DEFAULT_ERROR).send({ message: 'Произошла ошибка' });
       }

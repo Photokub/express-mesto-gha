@@ -37,7 +37,7 @@ const deleteCard = async (req, res) => {
     }
     return res.send(card);
   } catch (err) {
-    if (err.name === 'CastError' || err.name === 'ValidationError') {
+    if (err.name === 'CastError') {
       return res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные при создании карточки' });
     }
     return res.status(DEFAULT_ERROR).send({ message: 'Произошла ошибка' });
@@ -52,12 +52,12 @@ const putLike = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        res.status(NOT_FOUND).send({ message: 'Карточка не обнаружена' });
+        return res.status(NOT_FOUND).send({ message: 'Карточка не обнаружена' });
       }
-      res.send(card);
+      return res.send(card);
     })
     .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные для постановки/снятии лайка.' });
       } else {
         res.status(DEFAULT_ERROR).send({ message: 'Произошла ошибка' });
@@ -73,12 +73,12 @@ const deleteLike = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        res.status(NOT_FOUND).send({ message: 'Карточка не обнаружена' });
+        return res.status(NOT_FOUND).send({ message: 'Карточка не обнаружена' });
       }
-      res.send(card);
+      return res.send(card);
     })
     .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         res.status(ERROR_CODE).send({ message: 'Переданы некорректные данные для постановки/снятии лайка.' });
       } else {
         res.status(DEFAULT_ERROR).send({ message: 'Произошла ошибка' });
