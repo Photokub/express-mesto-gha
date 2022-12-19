@@ -19,9 +19,11 @@
   },
   "homepage": "https://github.com/Photokub/express-mesto-gha#readme",
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "body-parser": "^1.20.1",
     "express": "^4.18.2",
-    "mongoose": "^6.7.3"
+    "mongoose": "^6.7.3",
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "eslint": "^8.29.0",
