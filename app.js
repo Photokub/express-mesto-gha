@@ -6,6 +6,9 @@ const bodyParser = require('body-parser');
 
 const { PORT = 3000, BASE_PATH } = process.env;
 
+const {login, createUser} = require('./controllers/users');
+const auth = require('./middlewares/auth');
+
 mongoose.connect('mongodb://localhost:27017/mestodb', () => {
   console.log('Подключение базы mestodb');
 });
@@ -24,6 +27,11 @@ app.use((req, res, next) => {
   };
   next();
 });
+
+app.post('/signin', login);
+app.post('/signup', createUser);
+
+app.use(auth);
 
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));

@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const User = require('../models/users');
 
+const jwt = require('jsonwebtoken');
+
 const ERROR_CODE = 400;
 const NOT_FOUND = 404;
 const DEFAULT_ERROR = 500;
@@ -17,16 +19,45 @@ const login = (req, res) => {
       }
       return bcrypt.compare(password, user.password);
     })
-    .then((matched) => {
+    .then(({
+      matched,
+      user,
+    }) => {
       if (!matched) {
         return Promise.reject(new Error('Неправильные почта или пароль'));
       }
-      res.send({ message: 'Всё верно!' });
+      const token = jwt.sign(
+        { _id: user._id },
+        'some-secret-key',
+        { expiresIn: '7d' },
+      );
+      res.send({ token });
     })
     .catch((err) => {
       res
         .status(401)
         .send({ message: err.message });
+    });
+};
+
+const getUserProfile = (req, res) => {
+  User.findById(req.params._id)
+    .then((user) => {
+      if (!user) {
+        return res.status(NOT_FOUND)
+          .send({ message: 'Пользователь не найден' });
+      }
+      console.log(user);
+      return res.send(user);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(ERROR_CODE)
+          .send({ message: 'Переданы некорректные данные пользователя' });
+      } else {
+        res.status(DEFAULT_ERROR)
+          .send({ message: 'Произошла ошибка' });
+      }
     });
 };
 
@@ -151,9 +182,11 @@ const patchUserAvatar = (req, res) => {
 };
 
 module.exports = {
+  login,
   createUser,
   getUsers,
   getUserId,
   patchUserAvatar,
   updateUserData,
+  getUserProfile,
 };
