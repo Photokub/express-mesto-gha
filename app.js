@@ -21,13 +21,6 @@ app.listen(PORT, () => {
 app.use(express.json());
 app.use(bodyParser.json());
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '6386592bf89b2ed25204e3bd',
-  };
-  next();
-});
-
 app.post('/signin', login);
 app.post('/signup', createUser);
 
