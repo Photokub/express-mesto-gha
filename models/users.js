@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = require('mongoose');
 const validator = require('validator');
+const REG_EXP = /^(http|https):\/\/(www.)?[^ "]+$/g;
 
 validator.isEmail('foo@bar.com');
 
@@ -23,6 +24,12 @@ const userSchema = new Schema({
     type: String,
     required: false,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    validate: {
+      validator: function(v) {
+        return REG_EXP.test(v);
+      },
+      message: props => `${props.value} - ссылка не валидна`
+    },
   },
   email: {
     type: String,
