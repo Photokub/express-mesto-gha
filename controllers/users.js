@@ -7,6 +7,10 @@ const ERROR_CODE = 400;
 const NOT_FOUND = 404;
 const DEFAULT_ERROR = 500;
 
+const NotFoundError = require('../errors/not-found-err');
+const BadRequestErr = require('../errors/bad-request-err');
+const InternalServerErr = require('../errors/interval-server-err');
+
 // const login = (req, res) => {
 //   const {
 //     email,
@@ -61,25 +65,27 @@ const login = async (req, res) => {
   }
 }
 
-const getUserProfile = (req, res) => {
+const getUserProfile = (req, res, next) => {
   User.findById(req.params._id)
     .then((user) => {
       if (!user) {
-        return res.status(NOT_FOUND)
-          .send({message: 'Пользователь не найден'});
+        // return res.status(NOT_FOUND)
+        //   .send({message: 'Пользователь не найден'});
+        throw new NotFoundError('Пользователь не найден');
       }
       console.log(user);
       return res.send(user);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(ERROR_CODE)
-          .send({message: 'Переданы некорректные данные пользователя'});
-      } else {
-        res.status(DEFAULT_ERROR)
-          .send({message: 'Произошла ошибка'});
-      }
-    });
+    // .catch((err) => {
+    //   if (err.name === 'CastError') {
+    //     res.status(ERROR_CODE)
+    //       .send({message: 'Переданы некорректные данные пользователя'});
+    //   } else {
+    //     res.status(DEFAULT_ERROR)
+    //       .send({message: 'Произошла ошибка'});
+    //   }
+    // });
+    .catch(next);
 };
 
 const createUser = (req, res) => {
