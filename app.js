@@ -1,5 +1,7 @@
 const express = require('express');
 
+const { celebrate, Joi, errors, Segments } = require('celebrate');
+
 const app = express();
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -21,8 +23,28 @@ app.listen(PORT, () => {
 app.use(express.json());
 app.use(bodyParser.json());
 
-app.post('/signin', login);
-app.post('/signup', createUser);
+// app.post('/signin', login);
+// app.post('/signup', createUser);
+
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    //name: Joi.string().min(2).max(30).default('Жак-Ив Кусто'),
+    //about: Joi.string().min(2).default('Исследователь'),
+    //avatar: Joi.string().min(2).default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png'),
+    email: Joi.string().required(),
+    password: Joi.string().required().min(8),
+  }),
+}),login);
+
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30).default('Жак-Ив Кусто'),
+    about: Joi.string().min(2).default('Исследователь'),
+    avatar: Joi.string().min(2).default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png'),
+    email: Joi.string().required(),
+    password: Joi.string().required().min(8),
+  }),
+}),createUser);
 
 app.use(auth);
 
