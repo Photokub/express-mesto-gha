@@ -3,8 +3,15 @@ const {validator} = require('validator');
 
 module.exports.validateLogin = celebrate({
   body: Joi.object().keys({
-    email: Joi.string().required(),
+    email: Joi.string().required().custom((value) => {
+      if (!validator.isEmail(value)) {
+        throw new Error('ссылка не валидна');
+      }
+      return value;
+    }),
     password: Joi.string().required().min(5),
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
   }),
 });
 
