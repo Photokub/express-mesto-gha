@@ -3,9 +3,7 @@ const User = require('../models/users');
 
 const jwt = require('jsonwebtoken');
 
-const ERROR_CODE = 400;
 const NOT_FOUND = 404;
-const DEFAULT_ERROR = 500;
 
 const NotFoundError = require('../errors/not-found-err');
 const BadRequestErr = require('../errors/bad-request-err');
