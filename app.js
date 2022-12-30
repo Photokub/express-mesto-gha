@@ -32,7 +32,7 @@ app.post('/signin', celebrate({
     //about: Joi.string().min(2).default('Исследователь'),
     //avatar: Joi.string().min(2).default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png'),
     email: Joi.string().required(),
-    password: Joi.string().required().min(8),
+    password: Joi.string().required().min(5),
   }),
 }),login);
 
@@ -42,7 +42,7 @@ app.post('/signup', celebrate({
     about: Joi.string().min(2).default('Исследователь'),
     avatar: Joi.string().min(2).default('https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png'),
     email: Joi.string().required(),
-    password: Joi.string().required().min(8),
+    password: Joi.string().required().min(5),
   }),
 }),createUser);
 
@@ -64,7 +64,7 @@ app.use((err, req, res, next) => {
     .send({
       // проверяем статус и выставляем сообщение в зависимости от него
       message: statusCode === 500
-        ? 'На сервере произошла ошибка'
+        ? 'На сервере произошла ошибка 500'
         : message
     });
 });

@@ -1,10 +1,9 @@
 const router = require('express').Router();
 
-const { celebrate, Joi, errors, Segments } = require('celebrate');
-
 const {
   createUser, getUserProfile, getUsers, getUserId, updateUserData, patchUserAvatar,
 } = require('../controllers/users');
+
 const {celebrate, Joi} = require("celebrate");
 
 //router.post('/', createUser);
