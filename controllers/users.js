@@ -80,38 +80,31 @@ const createUser = (req, res, next) => {
     });
 };
 
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) => {
-      console.error(err);
-      return res.status(DEFAULT_ERROR)
-        .send({message: 'Произошла ошибка'});
-    });
+    .catch(next)
 };
 
-const getUserId = (req, res) => {
+const getUserId = (req, res, next) => {
   User.findById(req.params._id)
     .then((user) => {
       if (!user) {
-        return res.status(NOT_FOUND)
-          .send({message: 'Пользователь не найден'});
+        return next (new NotFoundError('Пользователь не найден'));
       }
       console.log(user);
       return res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(ERROR_CODE)
-          .send({message: 'Переданы некорректные данные пользователя'});
+        return next(new BadRequestErr('Переданы некорректные данные пользователя'))
       } else {
-        res.status(DEFAULT_ERROR)
-          .send({message: 'Произошла ошибка'});
+        return next(new InternalServerErr('Произошла ошибка'))
       }
     });
 };
 
-const updateUserData = (req, res) => {
+const updateUserData = (req, res, next) => {
   const {body} = req;
   User.findByIdAndUpdate(
     req.user._id,
@@ -125,26 +118,21 @@ const updateUserData = (req, res) => {
     },
   )
     .orFail(() => {
-      const error = new Error('Пользователь по заданному id отсутствует в базе');
-      error.statusCode = NOT_FOUND;
-      throw error;
+      new NotFoundError('Пользователь по заданному id отсутствует в базе')
     })
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        res.status(ERROR_CODE)
-          .send({message: 'Передан невалидный id пользователя'});
+        return next(new BadRequestErr('Передан невалидный id пользователя'))
       } else if (err.statusCode === NOT_FOUND) {
-        res.status(NOT_FOUND)
-          .send({message: 'Пользователь не найден'});
+        return next (new NotFoundError('Пользователь не найден'));
       } else {
-        res.status(DEFAULT_ERROR)
-          .send({message: 'Произошла ошибка'});
+        return next(new InternalServerErr('Произошла ошибка'))
       }
     });
 };
 
-const patchUserAvatar = (req, res) => {
+const patchUserAvatar = (req, res, next) => {
   const {avatar} = req.body;
   User.findByIdAndUpdate(
     req.user._id,
@@ -156,18 +144,15 @@ const patchUserAvatar = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        return res.status(NOT_FOUND)
-          .send({message: 'Пользователь не найден'});
+        return next (new NotFoundError('Пользователь не найден'));
       }
       return res.send(user);
     })
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        res.status(ERROR_CODE)
-          .send({message: 'Переданы некорректные данные при обновлении аватара.'});
+        return next(new BadRequestErr('Переданы некорректные данные при обновлении аватара'))
       } else {
-        res.status(DEFAULT_ERROR)
-          .send({message: 'Произошла ошибка'});
+        return next(new InternalServerErr('Произошла ошибка'))
       }
     });
 };
