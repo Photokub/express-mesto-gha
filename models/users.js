@@ -1,9 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = require('mongoose');
-const validator = require('validator');
+const {validator} = require('validator');
 const REG_EXP = /^(http|https):\/\/(www.)?[^ "]+$/g;
-
-validator.isEmail('foo@bar.com');
 
 const userSchema = new Schema({
   name: {
@@ -35,7 +33,11 @@ const userSchema = new Schema({
     type: String,
     required: true,
     unique: true,
-  },
+    validate: {
+      validator(value) {
+        return validator.isEmail(value);
+      },
+    }},
   password: {
     type: String,
     required: true,
