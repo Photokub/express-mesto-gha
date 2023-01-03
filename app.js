@@ -33,16 +33,4 @@ app.use('/cards', require('./routes/cards'));
 
 app.use('*', (req, res, next) => next(new NotFoundError('404 Старница не найдена')));
 
-app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-
-  res
-    .status(statusCode)
-    .send({
-      message: statusCode === 500
-        ? 'На сервере произошла ошибка 500'
-        : message,
-    });
-
-  return next();
-});
+app.use(require('./middlewares/errors'))
