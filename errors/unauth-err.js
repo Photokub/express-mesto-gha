@@ -5,4 +5,4 @@ class UnauthorizedErr extends Error {
   }
 }
 
-module.exports = UnauthorizedErr
+module.exports = UnauthorizedErr;
