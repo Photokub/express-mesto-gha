@@ -7,8 +7,8 @@ const NOT_FOUND = 404;
 
 const NotFoundError = require('../errors/not-found-err');
 const BadRequestErr = require('../errors/bad-request-err');
-const InternalServerErr = require('../errors/interval-server-err');
-const ConflictErr = require('../errors/conflict-err')
+const ConflictErr = require('../errors/conflict-err');
+const UnauthorizedErr = require('../errors/unauth-err');
 
 const login = async (req, res, next) => {
   const {
@@ -17,17 +17,17 @@ const login = async (req, res, next) => {
   } = req.body;
   try {
     const user = await User.findOne({email}).select('+password')
-    const token = jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' });
     if (!user) {
-      return next (new NotFoundError('Неправильные почта или пароль 404'));
+      return next (new UnauthorizedErr('Ошибка авторизации 401'));
     }
     const result = await bcrypt.compare(password, user.password);
     if (!result) {
-      return next (new NotFoundError('Неправильные почта или пароль 404'));
+      return next (new UnauthorizedErr('Ошибка авторизации 401'));
     }
+    const token = jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' });
     res.cookie('jwt', token, { maxAge: 3600000, httpOnly: true, sameSite: true }).send({_id: user._id, user: user.email, message: 'Токен jwt передан в cookie'});
   } catch (err) {
-    next(err)
+    return next(err)
   }
 }
 
@@ -44,7 +44,7 @@ const getUserProfile = (req, res, next) => {
       if (err.name === 'CastError') {
         return next(new BadRequestErr('Переданы некорректные данные пользователя'))
       } else {
-        return next(new InternalServerErr('Произошла ошибка'))
+        return next(err)
       }
     });
 };
@@ -67,13 +67,13 @@ const createUser = (req, res, next) => {
     }))
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
+      if (err.name === 'ValidationError') {
         return next(new BadRequestErr('Переданы некорректные данные пользователя'))
       }
       if (err.code === 11000) {
         return next(new ConflictErr(`Пользователь с ${email} уже существует`));
       } else {
-        return next(new InternalServerErr('Произошла ошибка'))
+        return next(err)
       }
     });
 };
@@ -82,24 +82,6 @@ const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
     .catch(next)
-};
-
-const getUserId = (req, res, next) => {
-  User.findById(req.params._id)
-    .then((user) => {
-      if (!user) {
-        return next (new NotFoundError('Пользователь не найден'));
-      }
-      console.log(user);
-      return res.send(user);
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequestErr('Переданы некорректные данные пользователя'))
-      } else {
-        return next(new InternalServerErr('Произошла ошибка'))
-      }
-    });
 };
 
 const updateUserData = (req, res, next) => {
@@ -120,12 +102,12 @@ const updateUserData = (req, res, next) => {
     })
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
+      if (err.name === 'ValidationError') {
         return next(new BadRequestErr('Передан невалидный id пользователя'))
       } else if (err.statusCode === NOT_FOUND) {
         return next (new NotFoundError('Пользователь не найден'));
       } else {
-        return next(new InternalServerErr('Произошла ошибка'))
+        return next(err)
       }
     });
 };
@@ -147,10 +129,10 @@ const patchUserAvatar = (req, res, next) => {
       return res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
+      if (err.name === 'ValidationError') {
         return next(new BadRequestErr('Переданы некорректные данные при обновлении аватара'))
       } else {
-        return next(new InternalServerErr('Произошла ошибка'))
+        return next(err)
       }
     });
 };
@@ -159,7 +141,6 @@ module.exports = {
   login,
   createUser,
   getUsers,
-  getUserId,
   patchUserAvatar,
   updateUserData,
   getUserProfile,
