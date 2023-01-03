@@ -20,7 +20,7 @@ const createCard = async (req, res, next) => {
 
 const getCards = async (req, res, next) => {
   try {
-    const cards = await Card.find({});
+    const cards = await Card.find({}).populate('owner');
     return res.send(cards);
   } catch (err) {
     return next(err);
