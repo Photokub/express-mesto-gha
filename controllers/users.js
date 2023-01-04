@@ -2,8 +2,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/users');
 
-const NOT_FOUND = 404;
-
 const NotFoundError = require('../errors/not-found-err');
 const BadRequestErr = require('../errors/bad-request-err');
 const ConflictErr = require('../errors/conflict-err');
@@ -39,12 +37,7 @@ const getUserProfile = (req, res, next) => {
       console.log(user);
       return res.send(user);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequestErr('Переданы некорректные данные пользователя'));
-      }
-      return next(err);
-    });
+    .catch((err) => next(err));
 };
 
 const createUser = (req, res, next) => {
@@ -96,14 +89,7 @@ const updateUserData = (req, res, next) => {
   )
     .orFail(() => new NotFoundError('Ничего не найдено'))
     .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return next(new BadRequestErr('Передан невалидный id пользователя'));
-      } if (err.statusCode === NOT_FOUND) {
-        return next(new NotFoundError('Пользователь не найден'));
-      }
-      return next(err);
-    });
+    .catch((err) => next(err));
 };
 
 const patchUserAvatar = (req, res, next) => {
@@ -122,12 +108,7 @@ const patchUserAvatar = (req, res, next) => {
       }
       return res.send(user);
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return next(new BadRequestErr('Переданы некорректные данные при обновлении аватара'));
-      }
-      return next(err);
-    });
+    .catch((err) => next(err));
 };
 
 module.exports = {

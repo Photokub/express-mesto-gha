@@ -1,7 +1,6 @@
 const Card = require('../models/cards');
 
 const NotFoundError = require('../errors/not-found-err');
-const BadRequestErr = require('../errors/bad-request-err');
 const ForbiddenError = require('../errors/forbidden-err');
 
 const createCard = async (req, res, next) => {
@@ -11,23 +10,20 @@ const createCard = async (req, res, next) => {
     const card = await Card.create({ name, link, owner: req.user._id });
     return res.status(201).send(card);
   } catch (err) {
-    if (err.name === 'ValidationError') {
-      return next(new BadRequestErr('Ошибка валидации'));
-    }
     return next(err);
   }
 };
 
 const getCards = async (req, res, next) => {
   try {
-    const cards = await Card.find({}).populate('owner');
+    const cards = await Card.find({}).populate('owner').populate('likes');
     return res.send(cards);
   } catch (err) {
     return next(err);
   }
 };
 
-const deleteCard =  (req, res, next) => {
+const deleteCard = (req, res, next) => {
   const userId = req.user._id;
 
   Card.findById({ _id: req.params.cardId })
@@ -39,16 +35,9 @@ const deleteCard =  (req, res, next) => {
         throw new ForbiddenError('Невозможно удалить');
       }
       Card.findByIdAndRemove(req.params._id)
-      .then(() => {
-        return res.send({message: "Карточка удалена"});
-      }).catch(next);
+        .then(() => res.send({ message: 'Карточка удалена' })).catch(next);
     })
-  .catch ((err) => {
-    if (err.name === 'CastError') {
-      return next(new BadRequestErr('Переданы некорректные данные при создании карточки'));
-    }
-    return next(err);
-  })
+    .catch((err) => next(err));
 };
 
 const putLike = (req, res, next) => {
@@ -63,12 +52,7 @@ const putLike = (req, res, next) => {
       }
       return res.send(card);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequestErr({ message: 'Переданы некорректные данные для постановки/снятии лайка.' }));
-      }
-      return next(err);
-    });
+    .catch((err) => next(err));
 };
 
 const deleteLike = (req, res, next) => {
@@ -83,12 +67,7 @@ const deleteLike = (req, res, next) => {
       }
       return res.send(card);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequestErr({ message: 'Переданы некорректные данные для постановки/снятии лайка.' }));
-      }
-      return next(err);
-    });
+    .catch((err) => next(err));
 };
 
 module.exports = {

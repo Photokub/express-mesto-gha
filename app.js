@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
-const { validateLogin } = require('./middlewares/validators');
+const { validateLogin, validateReg } = require('./middlewares/validators');
 
 const app = express();
 
@@ -23,7 +23,7 @@ app.listen(PORT, () => {
 
 app.use(express.json());
 
-app.post('/signup', validateLogin, createUser);
+app.post('/signup', validateReg, createUser);
 app.post('/signin', validateLogin, login);
 
 app.use(auth);
@@ -33,4 +33,4 @@ app.use('/cards', require('./routes/cards'));
 
 app.use('*', (req, res, next) => next(new NotFoundError('404 Старница не найдена')));
 
-app.use(require('./middlewares/errors'))
+app.use(require('./middlewares/errors'));
