@@ -28,18 +28,6 @@ const login = async (req, res, next) => {
   }
 };
 
-const getUserProfile = (req, res, next) => {
-  User.findById(req.params._id)
-    .then((user) => {
-      if (!user) {
-        throw new NotFoundError('Пользователь не найден');
-      }
-      console.log(user);
-      return res.send(user);
-    })
-    .catch((err) => next(err));
-};
-
 const createUser = (req, res, next) => {
   const {
     name,
@@ -89,7 +77,12 @@ const updateUserData = (req, res, next) => {
   )
     .orFail(() => new NotFoundError('Ничего не найдено'))
     .then((user) => res.send(user))
-    .catch((err) => next(err));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return next(new BadRequestErr('Передан невалидный id пользователя'));
+      }
+      return next(err);
+    });
 };
 
 const patchUserAvatar = (req, res, next) => {
@@ -108,7 +101,45 @@ const patchUserAvatar = (req, res, next) => {
       }
       return res.send(user);
     })
-    .catch((err) => next(err));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return next(new BadRequestErr('Переданы некорректные данные при обновлении аватара'));
+      }
+      return next(err);
+    });
+};
+
+const getUserProfile = (req, res, next) => {
+  User.findById(req.params._id)
+    .then((user) => {
+      if (!user) {
+        throw new NotFoundError('Пользователь не найден');
+      }
+      console.log(user);
+      return res.send(user);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return next(new BadRequestErr('Переданы некорректные данные пользователя'));
+      }
+      return next(err);
+    });
+};
+
+const getUserInfo = (req, res, next) => {
+  User.findById(req.params.userId)
+    .orFail(() => new NotFoundError('Пользователь с таким ID не найден'))
+    .then((user) => {
+      if (!user) {
+        return next(new NotFoundError('Пользователь не найден'));
+      }
+      return res.send(user);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return next(new BadRequestErr('Переданы некорректные данные пользователя'));
+      } return next(err);
+    });
 };
 
 module.exports = {
@@ -118,4 +149,5 @@ module.exports = {
   patchUserAvatar,
   updateUserData,
   getUserProfile,
+  getUserInfo,
 };
