@@ -22,7 +22,7 @@ const login = async (req, res, next) => {
       return next(new UnauthorizedErr('Ошибка авторизации 401'));
     }
     const token = jwt.sign({ _id: user._id }, 'super-strong-secret', { expiresIn: '7d' });
-    return res.cookie('jwt', token, { maxAge: 3600000, httpOnly: true, sameSite: true }).send({ _id: user._id, user: user.email, message: 'Токен jwt передан в cookie' });
+    return res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true, sameSite: true }).send({ _id: user._id, user: user.email, message: 'Токен jwt передан в cookie' });
   } catch (err) {
     return next(err);
   }
@@ -110,7 +110,7 @@ const patchUserAvatar = (req, res, next) => {
 };
 
 const getUserProfile = (req, res, next) => {
-  User.findById(req.params._id)
+  User.findById(req.user._id)
     .then((user) => {
       if (!user) {
         throw new NotFoundError('Пользователь не найден');
@@ -118,12 +118,7 @@ const getUserProfile = (req, res, next) => {
       console.log(user);
       return res.send(user);
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequestErr('Переданы некорректные данные пользователя'));
-      }
-      return next(err);
-    });
+    .catch(next);
 };
 
 const getUserInfo = (req, res, next) => {
