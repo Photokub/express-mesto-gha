@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 const { validateLogin, validateReg } = require('./middlewares/validators');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const app = express();
 
@@ -23,6 +24,8 @@ app.listen(PORT, () => {
 
 app.use(express.json());
 
+app.use(requestLogger);  // подключаем логгер запросов
+
 app.post('/signup', validateReg, createUser);
 app.post('/signin', validateLogin, login);
 
@@ -32,5 +35,9 @@ app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
 app.use('*', (req, res, next) => next(new NotFoundError('404 Старница не найдена')));
+
+app.use(errorLogger); // подключаем логгер ошибок
+
+//app.use(errors()); // обработчик ошибок celebrate
 
 app.use(require('./middlewares/errors'));
